@@ -19,40 +19,33 @@
 </head>
 <body>
     <canvas id="glcanvas" tabindex='1'></canvas>
-    <script src="https://not-fl3.github.io/miniquad-samples/mq_js_bundle.js"></script>
     <script>
         console.log('Starting initialization...');
         
-        // Configure miniquad loader
-        miniquad_add_plugin({    
-            register_plugin: function (importObject) {
-                console.log('Registering plugin...');
-                importObject.env.web_user_data = function () {
-                    console.log('Accessing web user data...');
-                    return 0;
-                };
-            },
-            on_init: function () {
-                console.log('Plugin initialized');
-                // Create and mount the data directory
-                try {
-                    FS.mkdir('data');
-                    FS.mount(MEMFS, {}, 'data');
-                    console.log('Data directory created and mounted');
-                    
-                    // Try to preload save.json
-                    FS.createPreloadedFile('data', 'save.json', 'data/save.json', true, false);
-                    console.log('save.json preloaded successfully');
-                } catch (e) {
-                    console.log('Setup error:', e.message);
+        var Module = {
+            preRun: [
+                function() {
+                    console.log('PreRun: Setting up filesystem...');
+                    try {
+                        FS.mkdir('data');
+                        FS.mount(MEMFS, {}, 'data');
+                        console.log('Data directory created and mounted');
+                        
+                        // Try to preload save.json
+                        FS.createPreloadedFile('data', 'save.json', 'data/save.json', true, false);
+                        console.log('save.json preloaded successfully');
+                    } catch (e) {
+                        console.log('Setup error:', e.message);
+                    }
                 }
-            },
-            name: 'user_data',
-            version: '0.1.0',
-        });
-
+            ],
+            canvas: document.getElementById('glcanvas')
+        };
+    </script>
+    <script src="https://not-fl3.github.io/miniquad-samples/mq_js_bundle.js"></script>
+    <script>
         console.log('Loading WASM...');
-        miniquad_load("Grid-Game.wasm");
+        load("Grid-Game.wasm");
     </script>
 </body>
 </html>
