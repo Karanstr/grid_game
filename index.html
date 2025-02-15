@@ -19,43 +19,21 @@
 </head>
 <body>
     <canvas id="glcanvas" tabindex='1'></canvas>
-    <script>
-        console.log('Setting up Module...');
-        var Module = {
-            preRun: [
-                function() {
-                    console.log('PreRun: Setting up filesystem...');
-                    try {
-                        FS.mkdir('/data');
-                        FS.mount(MEMFS, {}, '/data');
-                        console.log('Data directory created and mounted');
-
-                        // Load the existing save.json
-                        var xhr = new XMLHttpRequest();
-                        xhr.open('GET', './data/save.json', false); // Synchronous request
-                        xhr.send(null);
-                        
-                        if (xhr.status === 200) {
-                            var content = xhr.responseText;
-                            FS.writeFile('/data/save.json', content);
-                            console.log('save.json loaded and written to virtual filesystem');
-                        } else {
-                            console.error('Failed to load save.json:', xhr.status);
-                        }
-                    } catch (e) {
-                        console.error('Filesystem setup error:', e.message);
-                    }
-                }
-            ],
-            canvas: document.getElementById('glcanvas')
-        };
-        console.log('Module configured');
-    </script>
     <script src="https://not-fl3.github.io/miniquad-samples/mq_js_bundle.js"></script>
     <script>
-        console.log('Loading WASM...');
+        // Copy save.json to the web root for direct access
+        console.log('Starting initialization...');
+        window.fetch_file = function(path) {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', path, false);  // Synchronous for simplicity
+            xhr.send(null);
+            if (xhr.status === 200) {
+                return xhr.responseText;
+            }
+            return "{}";  // Return empty JSON if file doesn't exist
+        };
         load("Grid-Game.wasm");
-    </script>
+        </script>
     </script>
 </body>
 </html>
