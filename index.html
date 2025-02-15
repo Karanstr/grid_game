@@ -28,12 +28,16 @@
             print: function(text) { console.log(text); },
             printErr: function(text) { console.error(text); },
             preInit: function() {
-                // Mount the data directory to make it accessible to WASM
-                FS.mkdir('/data');
-                FS.mount(MEMFS, {}, '/data');
+                // Create and mount the data directory to match Rust code path
+                FS.mkdir('data');
+                FS.mount(MEMFS, {}, 'data');
                 
-                // You can preload files from the data directory here
-                // Example: FS.createPreloadedFile('/data', 'example.txt', 'data/example.txt', true, false);
+                // Preload save.json if it exists
+                try {
+                    FS.createPreloadedFile('data', 'save.json', 'data/save.json', true, false);
+                } catch (e) {
+                    console.log('No existing save.json found, will be created when needed');
+                }
             }
         };
 
