@@ -52,7 +52,7 @@
         });
 
         console.log('Loading WASM...');
-        load("Grid-Game.wasm").then(() => {
+        initWasm("Grid-Game.wasm").then(() => {
             console.log("WASM loaded successfully");
         }).catch(error => {
             console.error("Failed to load WASM:", error);
