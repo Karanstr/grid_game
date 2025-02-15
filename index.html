@@ -31,9 +31,15 @@
                         FS.mount(MEMFS, {}, 'data');
                         console.log('Data directory created and mounted');
                         
-                        // Try to preload save.json
-                        FS.createPreloadedFile('data', 'save.json', 'data/save.json', true, false);
-                        console.log('save.json preloaded successfully');
+                        // Create an empty save.json if it doesn't exist
+                        try {
+                            FS.createPreloadedFile('data', 'save.json', 'data/save.json', true, false);
+                            console.log('Existing save.json loaded successfully');
+                        } catch (e) {
+                            console.log('Creating new save.json...');
+                            FS.writeFile('data/save.json', '{}');
+                            console.log('Created new empty save.json');
+                        }
                     } catch (e) {
                         console.log('Setup error:', e.message);
                     }
