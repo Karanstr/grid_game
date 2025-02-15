@@ -20,6 +20,29 @@
 <body>
     <canvas id="glcanvas" tabindex='1'></canvas>
     <script src="https://not-fl3.github.io/miniquad-samples/mq_js_bundle.js"></script>
-    <script>load("Grid-Game.wasm");</script>
+    <script>
+        // Initialize virtual file system for WASM
+        var Module = {
+            preRun: [],
+            postRun: [],
+            print: function(text) { console.log(text); },
+            printErr: function(text) { console.error(text); },
+            preInit: function() {
+                // Mount the data directory to make it accessible to WASM
+                FS.mkdir('/data');
+                FS.mount(MEMFS, {}, '/data');
+                
+                // You can preload files from the data directory here
+                // Example: FS.createPreloadedFile('/data', 'example.txt', 'data/example.txt', true, false);
+            }
+        };
+
+        // Load and initialize the WASM module
+        load("Grid-Game.wasm").then(() => {
+            console.log("WASM loaded successfully");
+        }).catch(error => {
+            console.error("Failed to load WASM:", error);
+        });
+    </script>
 </body>
 </html>
