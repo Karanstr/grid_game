@@ -19,31 +19,43 @@
 </head>
 <body>
     <canvas id="glcanvas" tabindex='1'></canvas>
+    <script src="https://not-fl3.github.io/miniquad-samples/mq_js_bundle.js"></script>
     <script>
         console.log('Starting initialization...');
         
-        var Module = {
-            preRun: [
-                function() {
-                    console.log('PreRun: Setting up filesystem...');
-                    try {
-                        FS.mkdir('data');
-                        FS.mount(MEMFS, {}, 'data');
-                        console.log('Data directory created and mounted');
-                        
-                        // Use createPreloadedFile with the correct local path
-                        FS.createPreloadedFile('data', 'save.json', './data/save.json', true, false);
-                        console.log('Existing save.json preloaded successfully');
-                    } catch (e) {
-                        console.log('Setup error:', e.message);
+        // Register a plugin to handle file system setup
+        miniquad_add_plugin({
+            name: 'fs_setup',
+            version: '0.1.0',
+            register_plugin: function (importObject) {
+                console.log('Registering filesystem plugin...');
+            },
+            on_init: function () {
+                console.log('Initializing filesystem...');
+                try {
+                    // Create virtual filesystem structure
+                    FS.mkdir('/data');
+                    FS.mount(MEMFS, {}, '/data');
+                    console.log('Data directory created and mounted');
+
+                    // Load the existing save.json
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('GET', './data/save.json', false); // Synchronous request
+                    xhr.send(null);
+                    
+                    if (xhr.status === 200) {
+                        var content = xhr.responseText;
+                        FS.writeFile('/data/save.json', content);
+                        console.log('save.json loaded and written to virtual filesystem');
+                    } else {
+                        console.error('Failed to load save.json:', xhr.status);
                     }
+                } catch (e) {
+                    console.error('Filesystem setup error:', e.message);
                 }
-            ],
-            canvas: document.getElementById('glcanvas')
-        };
-    </script>
-    <script src="https://not-fl3.github.io/miniquad-samples/mq_js_bundle.js"></script>
-    <script>
+            }
+        });
+
         console.log('Loading WASM...');
         load("Grid-Game.wasm");
     </script>
