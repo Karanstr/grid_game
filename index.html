@@ -20,20 +20,6 @@
 <body>
     <canvas id="glcanvas" tabindex='1'></canvas>
     <script src="https://not-fl3.github.io/miniquad-samples/mq_js_bundle.js"></script>
-    <script>
-        // Copy save.json to the web root for direct access
-        console.log('Starting initialization...');
-        window.fetch_file = function(path) {
-            const xhr = new XMLHttpRequest();
-            xhr.open('GET', path, false);  // Synchronous for simplicity
-            xhr.send(null);
-            if (xhr.status === 200) {
-                return xhr.responseText;
-            }
-            return "{}";  // Return empty JSON if file doesn't exist
-        };
-        load("Grid-Game.wasm");
-        </script>
-    </script>
+    <script> load("Grid-Game.wasm"); </script>
 </body>
 </html>
